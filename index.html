@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Лабораторная Работа №2: Активность Амилазы</title>
+    <!-- Загрузка Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        /* Настройка шрифта Inter и общие стили для СВЕТЛОЙ ТЕМЫ */
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@100..900&display=swap');
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f0f4f8; /* Светлый фон (Very light gray/blue) */
+            color: #1f2937; /* Темный текст */
+        }
+        .vibe-card {
+            background-color: #ffffff; /* Белые карточки */
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.08); /* Легкая тень */
+            border: 1px solid #e2e8f0; /* Очень светлая граница */
+        }
+        /* Стиль для выполненного шага (Светло-зеленый фон) */
+        .step-completed {
+            background-color: #f0fdf4; /* Очень светлый зеленый */
+            border-left: 4px solid #10b981; /* Яркий зеленый акцент */
+        }
+        /* Стиль для активного шага (Светло-голубой фон) */
+        .step-active {
+            border: 2px solid #3b82f6; /* Яркий синий акцент */
+            background-color: #eff6ff; /* Очень светлый синий фон */
+        }
+        .progress-bar-fill {
+            transition: width 0.5s ease-in-out;
+            background-image: linear-gradient(to right, #10b981, #059669); /* Зеленый градиент */
+        }
+    </style>
+</head>
+<body>
+
+<div class="container mx-auto p-4 md:p-8">
+
+    <!-- Заголовок и Цель -->
+    <header class="text-center mb-10">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-[#3b82f6] mb-2">
+            Лабораторная Работа №2
+        </h1>
+        <h2 class="text-xl md:text-2xl font-light text-gray-700">
+            Исследование активности фермента амилазы
+        </h2>
+        <!-- Светлая версия зеленого акцента -->
+        <p class="mt-4 text-lg font-medium text-green-800 p-2 rounded-lg bg-green-100 inline-block border border-green-200">
+            <svg class="w-6 h-6 inline-block mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            Цель: Убедиться во влиянии pH и температуры на работу пищеварительных ферментов.
+        </p>
+    </header>
+
+    <!-- Оборудование -->
+    <div class="vibe-card p-6 rounded-xl mb-10">
+        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 border-gray-200 text-yellow-700">Оборудование и Реактивы</h3>
+        <p class="text-gray-600 mb-3">
+            Убедитесь, что у вас есть все необходимое:
+        </p>
+        <!-- Светлая версия фона для реагентов -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
+            <span class="p-2 bg-gray-100 rounded-lg text-center text-gray-800 border border-gray-200">Вареный крахмал</span>
+            <span class="p-2 bg-gray-100 rounded-lg text-center text-gray-800 border border-gray-200">Раствор йода</span>
+            <span class="p-2 bg-gray-100 rounded-lg text-center text-gray-800 border border-gray-200">Лимонная кислота</span>
+            <span class="p-2 bg-gray-100 rounded-lg text-center text-gray-800 border border-gray-200">Пищевая сода</span>
+            <span class="p-2 bg-gray-100 rounded-lg text-center text-gray-800 border border-gray-200">Пробирки (6 шт.)</span>
+            <span class="p-2 bg-gray-100 rounded-lg text-center text-gray-800 border border-gray-200">Термостат/Водяные бани</span>
+            <span class="p-2 bg-gray-100 rounded-lg text-center text-gray-800 border border-gray-200">Термометр</span>
+            <span class="p-2 bg-gray-100 rounded-lg text-center text-gray-800 border border-gray-200">Слюна</span>
+        </div>
+    </div>
+
+    <!-- Общий Прогресс -->
+    <div class="mb-8">
+        <h3 class="text-xl font-semibold mb-2 text-gray-800">Прогресс выполнения</h3>
+        <!-- Светлая версия трека прогресс-бара -->
+        <div id="progress-bar" class="w-full h-3 bg-gray-200 rounded-full overflow-hidden">
+            <div id="progress-fill" class="progress-bar-fill h-full" style="width: 0%;"></div>
+        </div>
+        <p id="progress-text" class="text-sm mt-1 text-gray-500">0/15 шагов выполнено</p>
+    </div>
+
+    <!-- Контейнер для Шагов -->
+    <div id="steps-container" class="space-y-4">
+        <!-- Шаги будут сгенерированы JavaScript -->
+    </div>
+
+    <!-- Таблица Результатов -->
+    <div class="mt-10 vibe-card p-6 rounded-xl">
+        <h3 class="text-2xl font-semibold mb-4 border-b pb-2 border-gray-200 text-purple-700">
+            Результаты Наблюдений
+        </h3>
+        <p class="text-gray-600 mb-4">
+            Нажмите кнопку "Проверить" на последнем шаге, чтобы увидеть ожидаемые результаты.
+        </p>
+        <div id="results-table">
+            <!-- Таблица результатов будет сгенерирована JS -->
+        </div>
+        <!-- Светлая версия фона для вывода -->
+        <div id="conclusion" class="mt-6 p-4 rounded-lg bg-red-100 hidden border border-red-300">
+            <h4 class="text-xl font-semibold text-red-700">Вывод</h4>
+            <p id="conclusion-text" class="text-gray-800 mt-2"></p>
+        </div>
+    </div>
+</div>
+
+<script>
+    // Инициализация переменных
+    let completedSteps = 0;
+    const totalSteps = 15;
+
+    // Внутреннее хранилище состояния (заменяет localStorage)
+    let labState = {
+        currentStep: 0,
+        completedSteps: new Array(totalSteps).fill(false),
+        results: {
+            ph_acid: 'Нет данных',
+            ph_neutral: 'Нет данных',
+            ph_base: 'Нет данных',
+            temp_cold: 'Нет данных',
+            temp_hot: 'Нет данных',
+            temp_body: 'Нет данных'
+        }
+    };
+
+    // Определение всех шагов лабораторной работы
+    const labSteps = [
+        // Общая подготовка
+        { id: 1, title: "Подготовка пробирок", text: "Налейте в 6 пробирок по 2-3 мл чистой воды комнатной температуры. Разделите их на два штатива (№1 и №2).", part: "Подготовка" },
+        // Часть I: Влияние pH
+        { id: 2, title: "Пробирка №1 (Кислота)", text: "В пробирку №1 (штатив №1) добавьте 5-6 капель **лимонной кислоты** (или щепоть).", part: "Влияние pH" },
+        { id: 3, title: "Пробирка №2 (Щелочь)", text: "В пробирку №2 (штатив №1) добавьте 5-6 капель **пищевой соды** (или щепоть).", part: "Влияние pH" },
+        { id: 4, title: "Пробирка №3 (Контроль pH)", text: "Пробирку №3 (штатив №1) оставьте без изменений (нейтральная среда).", part: "Влияние pH" },
+        { id: 5, title: "Добавление крахмала", text: "Во все три пробирки штатива №1 добавьте по 2 мл **раствора крахмала**.", part: "Влияние pH" },
+        { id: 6, title: "Добавление слюны", text: "Во все три пробирки штатива №1 добавьте 2-3 мл **слюны** (источник амилазы).", part: "Влияние pH" },
+        { id: 7, title: "Инкубация (pH)", text: "Все пробирки штатива №1 поместите в **термостат при 37°C** (или водяную баню с температурой 36-38°C) на 5 минут.", part: "Влияние pH" },
+        { id: 8, title: "Проверка (pH)", text: "После инкубации прилейте **йод** в каждую из трех пробирок штатива №1 и перемешайте.", part: "Влияние pH" },
+        // Часть II: Влияние Температуры
+        { id: 9, title: "Подготовка крахмала и слюны (Температура)", text: "В пробирки штатива №2 добавьте по 2 мл **крахмала** и 2-3 мл **слюны**.", part: "Влияние T" },
+        { id: 10, title: "Пробирка №4 (Холод)", text: "Пробирку №1 (штатив №2) поместите в **холодную воду со льдом** (около 5-10°C).", part: "Влияние T" },
+        { id: 11, title: "Пробирка №5 (Жар)", text: "Пробирку №2 (штатив №2) поместите в **горячую воду** (55-60°C).", part: "Влияние T" },
+        { id: 12, title: "Пробирка №6 (Оптимум T)", text: "Пробирку №3 (штатив №2) поместите в **теплую воду 37°C** (36-38°C).", part: "Влияние T" },
+        { id: 13, title: "Инкубация (T)", text: "Все пробирки штатива №2 выдержите в заданных температурных условиях **в течение 5 минут**.", part: "Влияние T" },
+        { id: 14, title: "Проверка (T)", text: "После инкубации прилейте **йод** в каждую из трех пробирок штатива №2 и перемешайте.", part: "Влияние T" },
+        // Завершение
+        { id: 15, title: "Формулировка Вывода", text: "Нажмите кнопку ниже, чтобы увидеть ожидаемые результаты и сформулировать вывод о влиянии pH и температуры на активность амилазы.", part: "Заключение", isFinal: true }
+    ];
+
+    // Ожидаемые (симулированные) результаты
+    const simulatedResults = {
+        ph_acid: 'Фиолетовое/Синее окрашивание (Крахмал не расщеплен)',
+        ph_neutral: 'Окрашивание отсутствует (Крахмал расщеплен)', // Оптимальный pH для амилазы слюны ~6.7-7.0
+        ph_base: 'Фиолетовое/Синее окрашивание (Крахмал не расщеплен)',
+        temp_cold: 'Фиолетовое/Синее окрашивание (Фермент неактивен)',
+        temp_hot: 'Фиолетовое/Синее окрашивание (Фермент денатурирован)',
+        temp_body: 'Окрашивание отсутствует (Фермент активен)'
+    };
+
+    const conclusionText = `
+        Результаты показывают, что фермент амилаза:
+        <ul class="list-disc list-inside mt-2 space-y-1">
+            <li><strong>Активен только при оптимальном pH (нейтральная среда)</strong>: В кислой и щелочной среде амилаза денатурируется или теряет активность, поэтому крахмал не расщепляется (синее окрашивание).</li>
+            <li><strong>Активен только при оптимальной температуре (температура тела $37°C$)</strong>: При низкой температуре ($5-10°C$) фермент неактивен, а при высокой ($55-60°C$) он необратимо денатурируется, что также приводит к отсутствию расщепления крахмала (синее окрашивание).</li>
+        </ul>
+        <p class="mt-2">Вывод: Активность ферментов строго зависит от условий среды: температуры и pH.</p>
+    `;
+
+    /**
+     * Рендерит все шаги на основе текущего состояния labState.
+     */
+    function renderSteps() {
+        const container = document.getElementById('steps-container');
+        container.innerHTML = '';
+        labSteps.forEach((step, index) => {
+            const isCompleted = labState.completedSteps[index];
+            const isActive = labState.currentStep === index;
+
+            const card = document.createElement('div');
+            // Применяем светлые стили, используя классы, определенные в секции <style>
+            card.className = `p-5 rounded-xl vibe-card transition duration-300 ${isCompleted ? 'step-completed' : isActive ? 'step-active' : ''}`;
+            card.innerHTML = `
+                <div class="flex justify-between items-start">
+                    <div>
+                        <span class="text-sm font-light text-gray-500 block mb-1">${step.part}</span>
+                        <!-- Адаптируем цвет текста: если завершен, то светлее; иначе - темно-серый/черный -->
+                        <h4 class="text-xl font-bold ${isCompleted ? 'text-gray-500 line-through' : 'text-gray-900'}">${step.id}. ${step.title}</h4>
+                        <p class="text-base mt-2 ${isCompleted ? 'text-gray-500' : 'text-gray-700'}">${step.text}</p>
+                    </div>
+                    <!-- Адаптируем цвета кнопок для светлой темы -->
+                    <button
+                        data-step-index="${index}"
+                        onclick="toggleStep(event)"
+                        class="p-3 rounded-full font-bold transition duration-200 ${isCompleted ? 'bg-green-500 hover:bg-green-600 text-white' : isActive ? 'bg-blue-600 hover:bg-blue-700 text-white' : 'bg-gray-300 text-gray-500 cursor-not-allowed opacity-70'}"
+                        ${!isActive ? 'disabled' : ''}
+                    >
+                        ${isCompleted ? '<svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path></svg>' : (step.isFinal ? 'Проверить' : 'Выполнить')}
+                    </button>
+                </div>
+            `;
+            container.appendChild(card);
+        });
+        updateProgressBar();
+    }
+
+    /**
+     * Обновляет прогресс-бар и текст.
+     */
+    function updateProgressBar() {
+        const count = labState.completedSteps.filter(c => c).length;
+        const percentage = (count / totalSteps) * 100;
+
+        document.getElementById('progress-fill').style.width = `${percentage}%`;
+        document.getElementById('progress-text').textContent = `${count}/${totalSteps} шагов выполнено`;
+    }
+
+    /**
+     * Обрабатывает нажатие на кнопку "Выполнить" или "Проверить".
+     * @param {Event} event
+     */
+    function toggleStep(event) {
+        const index = parseInt(event.currentTarget.dataset.stepIndex);
+        if (index === labState.currentStep) {
+            // Отмечаем текущий шаг как выполненный
+            labState.completedSteps[index] = true;
+            
+            // Переходим к следующему шагу
+            if (labState.currentStep < totalSteps - 1) {
+                labState.currentStep++;
+            } else if (labSteps[index].isFinal) {
+                // Если это финальный шаг, показываем результаты
+                showResults();
+            }
+
+            renderSteps();
+        }
+    }
+
+    /**
+     * Симулирует и отображает результаты лабораторной работы.
+     */
+    function showResults() {
+        // Заполняем симулированными данными
+        labState.results = {
+            ph_acid: simulatedResults.ph_acid,
+            ph_neutral: simulatedResults.ph_neutral,
+            ph_base: simulatedResults.ph_base,
+            temp_cold: simulatedResults.temp_cold,
+            temp_hot: simulatedResults.temp_hot,
+            temp_body: simulatedResults.temp_body
+        };
+
+        const tableContainer = document.getElementById('results-table');
+        // Адаптируем таблицу для светлой темы
+        tableContainer.innerHTML = `
+            <table class="w-full text-left border-collapse">
+                <thead>
+                    <tr class="bg-gray-100 border-b border-gray-300">
+                        <th class="p-3 text-sm font-semibold text-gray-700 rounded-tl-lg">Условие</th>
+                        <th class="p-3 text-sm font-semibold text-gray-700">Пробирка №</th>
+                        <th class="p-3 text-sm font-semibold text-gray-700 rounded-tr-lg">Наблюдение после йода</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="p-3 font-medium text-red-600">pH (Кислая)</td>
+                        <td class="p-3 text-gray-600">1</td>
+                        <td class="p-3 text-red-600">${labState.results.ph_acid}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="p-3 font-medium text-green-600">pH (Оптимум)</td>
+                        <td class="p-3 text-gray-600">3 (Контроль)</td>
+                        <td class="p-3 text-green-600">${labState.results.ph_neutral}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50">
+                        <td class="p-3 font-medium text-red-600">pH (Щелочная)</td>
+                        <td class="p-3 text-gray-600">2</td>
+                        <td class="p-3 text-red-600">${labState.results.ph_base}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50 bg-gray-50">
+                        <td class="p-3 font-medium text-blue-600">T (Низкая, $5-10^\circ C$)</td>
+                        <td class="p-3 text-gray-600">4</td>
+                        <td class="p-3 text-red-600">${labState.results.temp_cold}</td>
+                    </tr>
+                    <tr class="border-b border-gray-200 hover:bg-gray-50 bg-gray-50">
+                        <td class="p-3 font-medium text-red-600">T (Высокая, $55-60^\circ C$)</td>
+                        <td class="p-3 text-gray-600">5</td>
+                        <td class="p-3 text-red-600">${labState.results.temp_hot}</td>
+                    </tr>
+                    <tr class="hover:bg-gray-50 bg-gray-50">
+                        <td class="p-3 font-medium text-green-600">T (Оптимум, $37^\circ C$)</td>
+                        <td class="p-3 text-gray-600">6</td>
+                        <td class="p-3 text-green-600">${labState.results.temp_body}</td>
+                    </tr>
+                </tbody>
+            </table>
+        `;
+        // Показываем вывод
+        document.getElementById('conclusion').classList.remove('hidden');
+        document.getElementById('conclusion-text').innerHTML = conclusionText;
+    }
+
+
+    // Инициализация при загрузке страницы
+    window.onload = () => {
+        renderSteps();
+    };
+
+</script>
+
+</body>
+</html>
